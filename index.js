@@ -1,31 +1,32 @@
-// server.js
-const express = require("express");
-const app = express();
-const PORT = process.env.PORT || 3000;
+const http = require("http");
+const url = require("url");
 
-// Set the number of redirects
-const REDIRECT_COUNT = 5;
+// 20 MB file size in bytes
+const fileSize = 20 * 1024 * 1024;
 
-// When a user visits '/', start the chain by redirecting to '/path1'
-app.get("/", (req, res) => {
-//   res.redirect("/path1");
-res.send(`Final destination reached`);
+// Generate a 40MB buffer filled with random bytes
+const randomContent = Buffer.alloc(fileSize);
+for (let i = 0; i < fileSize; i++) {
+  randomContent[i] = Math.floor(Math.random() * 256);
+}
+
+const server = http.createServer((req, res) => {
+  // Parse query parameters to check if we should omit the Content-Length header
+  const queryObject = url.parse(req.url, true).query;
+  // If ?noCL=true is set, do not send the Content-Length header
+  const sendContentLength = !(queryObject.noCL === "true");
+
+  res.setHeader("Content-Type", "application/octet-stream");
+
+  if (sendContentLength) {
+    res.setHeader("Content-Length", fileSize);
+  }
+
+  // Send the random content as the response
+  res.end(randomContent);
 });
 
-// // This dynamic route matches paths like '/path1', '/path2', etc.
-// // The regular expression (\d+) ensures that only numeric values after "path" are captured.
-// app.get("/path:step(\\d+)", (req, res) => {
-//   const currentStep = parseInt(req.params.step, 10);
-
-//   if (currentStep < REDIRECT_COUNT) {
-//     // If we haven't reached the final step, redirect to the next path.
-//     res.redirect(`/path${currentStep + 1}`);
-//   } else {
-//     // Final destination reached. You can render a page or send a message.
-//     res.send(`Final destination reached at /path${currentStep}`);
-//   }
-// });
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+server.listen(4000, () => {
+  console.log("Server listening on http://localhost:3000");
+  console.log("Request with ?noCL=true to omit the Content-Length header.");
 });
