@@ -17,9 +17,9 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (pathname === "/my-pass.pkpass") {
+  if (pathname === "/pkpass") {
     // Serve the .pkpass file
-    const pkpassPath = path.join(__dirname, "my-pass.pkpass");
+    const pkpassPath = path.join(__dirname, "2YRvwooZ8wswnTZZhBbCeR.pkpass");
     const stat = fs.statSync(pkpassPath);
 
     res.writeHead(200, {
