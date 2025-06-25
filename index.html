@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PKPass Link Test</title>
+</head>
+<body>
+  <h2>Apple Wallet Pass Download</h2>
+
+  <a href="pkpass" download="my-pass.pkpass">🔗 Normal Link</a>
+
+  <br><br>
+
+  <!-- Blob-based link -->
+  <a id="blobLink" href="#" download="my-pass-from-blob.pkpass" style="display: none;">
+    🔗 Blob Link
+  </a>
+
+  <script>
+    fetch("/pkpass")
+      .then(res => res.blob())
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const blobLink = document.getElementById("blobLink");
+        blobLink.href = url;
+        blobLink.style.display = "inline";
+      });
+  </script>
+</body>
+</html>
